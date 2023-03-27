@@ -54,6 +54,7 @@ export const handler = async (
 }
 
 async function verifyToken(authHeader: string): Promise<JwtPayload> {
+  logger.info('Verify Token')
   const token = getToken(authHeader)
   const jwt: Jwt = decode(token, { complete: true }) as Jwt
 
@@ -64,6 +65,7 @@ async function verifyToken(authHeader: string): Promise<JwtPayload> {
     const keys = response.data.keys
     const signingKeys = keys.find(key => key.kid === jwt.header.kid)
     logger.info('signingKeys', signingKeys)
+
  if(!signingKeys){
   throw new Error('The JWKS endpoint did not contain any keys')
    
