@@ -3,7 +3,8 @@ import * as AWS from 'aws-sdk'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 import { createLogger } from '../utils/logger'
 import { TodoItem } from '../models/TodoItem';
-//import { TodoUpdate } from '../models/TodoUpdate';
+import { TodoUpdate } from '../models/TodoUpdate';
+
 var AWSXRay = require('aws-xray-sdk');
 const XAWS = AWSXRay.captureAWS(AWS)
 
@@ -26,7 +27,7 @@ export class TodosAcess{
             IndexName: this.todosIndex,
             KeyConditionExpression: 'userId = :userId',
             ExpressionAttributeValues: {
-                'userId': userId
+                ':userId': userId
             }
         })
         .promise()
@@ -48,22 +49,51 @@ export class TodosAcess{
 
     return todoItem as TodoItem
     }
-    // async updateTodoItem(
-    //     todoId: string,
-    //     UserId:string,
-    //     todoUpdate: TodoUpdate
-    // ): Promise<TodoUpdate>{
-    //     logger.info('Update todo function called')
 
-    //     await this.docClient
+    async updateTodoItem(
+        userId: string,
+        todoId: string,
+        todoUpdate: TodoUpdate
+    ): Promise<TodoUpdate> {
+        logger.info('Update todo function called')
 
-    //     .update({
-    //         TableName: this.todoTable,
-    //         Key: {
+        await this.docClient
 
-    //             todoId,
-    //             userId
-    //         },
-    //     })
-    // }
+        .update({
+            TableName: this.todoTable,
+            Key: {
+                todoId,
+                userId
+            },
+            UpdateExpression: 'set #name = :name, dueDate = :dueDate, done = :done',
+            ExpressionAttributeValues: {
+                ':name': todoUpdate.name,
+                ':dueDate': todoUpdate.dueDate,
+                ':done': todoUpdate.done
+            }
+
+        })
+
+        .promise()
+        
+        return todoUpdate as TodoUpdate
+    }
+
+    async  deleteTodoItem(todoId: string, userId: string): Promise<string> {
+        logger.info('Delete todo item function called')
+            const result = await this.docClient
+        .delete({
+            TableName: this.todoTable,
+            Key: {
+                todoId,
+                userId
+            }
+        })
+        .promise()
+        logger.info('Todo item delete', result)            
+
+        return todoId as string
+        
+    }
+   
 }
