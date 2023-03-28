@@ -43,7 +43,17 @@ provider:
             - xray:PutTelemetryRecords
             - xray:PutTraceSegments
           Resource: "*"
-
+custom:
+  documentation:
+    api:
+      info:
+        version: v1.0.0
+        title: Todos App
+        description: Serverless application for todos monitoring
+    models:
+        - name: CreateTodoRequest
+          contentType: application/json
+          schema: ${file(models/create-todo-model.json)}  
 
 functions:
   # hello:
@@ -52,22 +62,38 @@ functions:
   #     - httpApi:
   #         path: /
   #         method: get
-
+  
   Auth:
     handler: src/lambda/auth/auth0Authorizer.handler
 
   # TODO: Configure this function - 
   # Provide iamRoleStatements property for performing Actions on DynamoDB
 
-  # GetTodos:
-  #   handler: src/lambda/http/getTodos.handler
-  #   events:
-  #     - http:
-  #         method: get
-  #         path: todos
-  #         cors: true
-  #         authorizer: Auth
-
+  GetTodos:
+    handler: src/lambda/http/getTodos.handler
+    events:
+      - http:
+          method: get
+          path: todos
+          cors: true
+          authorizer: Auth
+    iamRoleStatementsName: ${self:provider.environment.PROJECT_NAME}-get-todo-role-${self:provider.stage}
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}/index/*
+      - Effect: Allow
+        Action:
+          - xray:PutTraceSegments
+        
+        Resource: 
+          - '*'
+  
   # TODO: Configure this function - 
   # Provide iamRoleStatements property. Decide the Actions and AWS Resource. 
   # To refer to an AWS resource defined in the "Resources" section, you can use "Resource: !GetAtt <resource-name>.Arn"
@@ -80,16 +106,13 @@ functions:
           method: post
           path: todos
           cors: true
-          # authorizer: Auth
-          # request:
-          #   schemas:
-          #     application/json: ${file(models/create-todo-model.json)}
-    # reqValidatorName: RequestBodyValidator
-    # documentation:
-    #   summary: Create new todo task
-    #   description: Create a todo task
-    #   requestModules:
-    #     'application/json':CreateTodoRequest
+          authorizer: Auth
+          reqValidatorName: RequestBodyValidator
+          documentation:
+            summary: Create new todo task
+            description: Create a todo task
+            requestModules:
+              'application/json':CreateTodoRequest
     iamRoleStatementsName: ${self:provider.environment.PROJECT_NAME}-create-todo-role-${self:provider.stage}
     iamRoleStatements:
       - Effect: Allow
@@ -158,6 +181,14 @@ resources:
         ResponseType: DEFAULT_5XX
         RestApiId:
           Ref: ApiGatewayRestApi
+
+    RequestBodyValidator:
+      Type: AWS::ApiGateway::RequestValidator
+      Properties:
+        Name: 'request-body-validator'
+          Ref: ApiGatewayRestApi
+        ValidatorRequestBody: true
+        ValidatorRequestParameters: false
 
      # What attributes will be copied to an index
     
