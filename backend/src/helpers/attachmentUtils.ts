@@ -16,7 +16,8 @@ export class AttachmentUtils{
             return `https://${this.bucketName}.s3.amazon.com/${todoId}`
         }
         
-        getUploadUrl(todoId: string){
+        getUploadUrl(todoId: string): string{
+            console.log('getUploadUrl called')
             const url = this.s3.getSignedUrl('putObject',{
                 Bucket: this.bucketName,
                 Key: todoId,
