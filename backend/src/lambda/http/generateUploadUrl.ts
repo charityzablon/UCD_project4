@@ -14,8 +14,8 @@ export const handler = middy(
     const userId = getUserId(event)
     console.log('userId: ', userId)
     const url = await createAttachmentPresignedUrl(
-      userId,
-      todoId
+           todoId,
+           userId
     )
       return {
         statusCode: 201,
@@ -24,8 +24,7 @@ export const handler = middy(
         })
       }
 
-   
-  }
+    }
 )
 
 handler

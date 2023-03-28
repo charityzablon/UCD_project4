@@ -39,14 +39,7 @@ provider:
     # Enable API Gateway logs
     restApi: true
 
-  iam:
-    role:
-      statements:
-        - Effect: Allow
-          Action:
-            - xray:PutTelemetryRecords
-            - xray:PutTraceSegments
-          Resource: "*"
+  
 custom:
   documentation:
     api:
@@ -170,11 +163,10 @@ functions:
           authorizer: Auth
           cors: true
           reqValidatorName: RequestBodyValidator
-        
+    iamRoleStatementsName: ${self:provider.environment.PROJECT_NAME}-update-todo-role${self:provider.stage}
     iamRoleStatements:
       - Effect: Allow
         Action:
-          - dynamodb:PutItem
           - dynamodb:UpdateItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
       - Effect: Allow
