@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "typescript-logger": "^5.0.1"
+  }
+}
