@@ -23,6 +23,7 @@ export const handler = middy(
           uploadUrl: url
         })
       }
+
    
   }
 )

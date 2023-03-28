@@ -70,7 +70,11 @@ export class TodosAcess{
                 ':name': todoUpdate.name,
                 ':dueDate': todoUpdate.dueDate,
                 ':done': todoUpdate.done
-            }
+            },
+            ExpressionAttributeNames: {
+                '#name': 'name'
+            },
+            ReturnValues: 'UPDATED_NEW'
 
         })
 

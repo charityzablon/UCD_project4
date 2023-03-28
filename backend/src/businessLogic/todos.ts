@@ -46,7 +46,7 @@ export async function createTodo(
 }
 
 //write update todo function
-export async function updatedTodo(
+export async function updateTodo(
     todoId: string,
     userId: string,
     todoUpdate: UpdateTodoRequest
@@ -71,7 +71,7 @@ export async function createAttachmentPresignedUrl(
     userid: string
 
 ): Promise<string>{
-    logger.info(' Create attachment funstion called by user', userid, todoId)
+    logger.info(' Create attachment function called by user', userid, todoId)
     return attachmentUtils.getUploadUrl(todoId)
 
 }

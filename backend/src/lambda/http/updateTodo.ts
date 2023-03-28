@@ -3,21 +3,21 @@ import 'source-map-support/register'
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import * as middy from 'middy'
 import { cors, httpErrorHandler } from 'middy/middlewares'
-import { updatedTodo } from '../../businessLogic/todos'
+import { updateTodo} from '../../businessLogic/todos'
 import { UpdateTodoRequest } from '../../requests/UpdateTodoRequest'
 import { getUserId } from '../utils'
 
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     const todoId = event.pathParameters.todoId
-    const updateTodo: UpdateTodoRequest = JSON.parse(event.body)
+    const updatedTodo: UpdateTodoRequest = JSON.parse(event.body)
     // TODO: Update a TODO item with the provided id using values in the "updatedTodo" object
-    const userId =getUserId(event)
+    const userId = getUserId(event)
     console.log('userId: ', userId)
-    await updatedTodo(
+    await updateTodo(
       userId,
       todoId,
-      updateTodo
+      updatedTodo
     )
 
     return {
