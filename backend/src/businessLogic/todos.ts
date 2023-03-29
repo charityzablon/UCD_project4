@@ -1,29 +1,26 @@
 import { TodosAcess } from '../dataLayer/todosAcess'
 import { AttachmentUtils } from '../helpers/attachmentUtils';
-import { TodoItem } from '../models/TodoItem'
+import { TodoItem } from '../models/TodoItem';
 // import {parseUserId} from "../auth/utils";
 import { CreateTodoRequest } from '../requests/CreateTodoRequest'
 import { createLogger } from '../utils/logger'
 import * as uuid from 'uuid'
 import { UpdateTodoRequest } from '../requests/UpdateTodoRequest';
 import { TodoUpdate } from '../models/TodoUpdate';
-// import * as createError from 'http-errors'
+
 
 // TODO: Implement businessLogic
 const logger = createLogger('TodosAcess')
 const attachmentUtils = new AttachmentUtils()
 const todosAcess = new TodosAcess()
 
+
 //create gettodos function
 export async function getTodosForUser(userId: string): Promise<TodoItem[]> {
     logger.info('Get todos for user function called')
        return todosAcess.getAllTodos(userId)
 }
-// export async function getTodosForUser(jwtToken: string): Promise<TodoItem[]> {
-//     const userId = parseUserId(jwtToken);
-//     return todosAcess.getAllTodos(userId);
-// }
-//Create todo function
+
 
 export async function createTodo(
     newTodo: CreateTodoRequest,
@@ -58,13 +55,12 @@ export async function updateTodo(
 
 //write delete todo
 export async function deleteTodo(
-    userId: string,
-    todoId: string,
+       todoId: string,
+       userId: string,
    ): Promise<string>{
     logger.info('Delete todo function called')
     return todosAcess.deleteTodoItem(todoId, userId)
 }
-
 
 //update url
 export async function createAttachmentPresignedUrl(
@@ -75,3 +71,5 @@ export async function createAttachmentPresignedUrl(
     return attachmentUtils.getUploadUrl(todoId)
 
 }
+
+
